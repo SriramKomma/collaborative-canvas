@@ -7,10 +7,14 @@ import { ToolIcon } from "./components/ToolIcon";
 import { Lobby } from "./components/Lobby";
 import "./App.css";
 
-const SERVERS = Array.from(
-  { length: 10 },
-  (_, i) => `http://localhost:${3001 + i}`,
-);
+const IS_PROD = import.meta.env.PROD;
+
+const SERVERS = IS_PROD
+  ? ["https://collaborative-canvas-iwff.onrender.com"]
+  : Array.from(
+      { length: 10 },
+      (_, i) => `http://localhost:${3001 + i}`
+    );
 
 const PRESET_COLORS = [
   "#ffffff",
