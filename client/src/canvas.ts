@@ -180,12 +180,6 @@ export class CanvasManager {
           ctx.fillText(a.text, a.points[0].x, a.points[0].y);
         }
         break;
-
-      case "image":
-        if (a.points.length > 0 && a.imageData) {
-          this.drawImageAction(ctx, a);
-        }
-        break;
     }
 
     ctx.restore();
@@ -247,29 +241,6 @@ export class CanvasManager {
     ctx.lineTo(cx + w / 2, cy + h / 2);
     ctx.closePath();
     ctx.stroke();
-  }
-
-  private imageCache = new Map<string, HTMLImageElement>();
-  onImageLoaded?: () => void;
-
-  private drawImageAction(ctx: CanvasRenderingContext2D, a: DrawAction) {
-    if (!a.imageData || a.points.length === 0) return;
-    const cached = this.imageCache.get(a.imageData);
-    const p = a.points[0];
-    const size = Math.max(50, a.width * 25);
-    if (cached && cached.complete && cached.naturalWidth > 0) {
-      const w = size;
-      const h = size * (cached.naturalHeight / cached.naturalWidth);
-      ctx.drawImage(cached, p.x, p.y, w, h);
-      return;
-    }
-    const img = new Image();
-    img.crossOrigin = "anonymous";
-    img.onload = () => {
-      this.imageCache.set(a.imageData!, img);
-      this.onImageLoaded?.();
-    };
-    img.src = a.imageData;
   }
 
   /** Parse hex color "#rrggbb" or "#rgb" to [r, g, b]. */

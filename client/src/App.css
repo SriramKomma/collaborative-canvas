@@ -272,6 +272,13 @@ body {
   min-width: 0;
 }
 
+/* Second row on mobile (room, copy, leave); inline on desktop */
+.top-bar-mobile-row2 {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .status-pill {
   display: inline-flex;
   align-items: center;
@@ -325,41 +332,117 @@ body {
   max-width: 140px;
 }
 
+/* ---------- Mobile: cleaner top bar (two rows, compact) ---------- */
 @media (max-width: 640px) {
+  :root {
+    --top-bar-height: 88px;
+  }
   .top-bar {
-    padding: 8px 10px;
-    padding-top: calc(8px + var(--safe-top));
-    padding-left: calc(10px + var(--safe-left));
-    padding-right: calc(10px + var(--safe-right));
-  }
-  .top-bar-left,
-  .top-bar-right {
+    flex-wrap: wrap;
+    padding: 6px 8px;
+    padding-top: calc(6px + var(--safe-top));
+    padding-left: calc(8px + var(--safe-left));
+    padding-right: calc(8px + var(--safe-right));
     gap: 6px;
+    min-height: auto;
   }
-  .status-pill .status-text {
+  .top-bar-left {
+    flex: 1 1 auto;
+    min-width: 0;
+    gap: 4px;
+    order: 1;
+    flex-wrap: wrap;
+  }
+  .top-bar-right {
+    flex: 0 0 auto;
+    gap: 4px;
+    order: 2;
+  }
+  .top-bar-left .status-pill .status-text {
     display: none;
   }
-  .status-pill {
-    padding: 8px 10px;
-    min-width: 44px;
-    min-height: 44px;
+  .top-bar-left .status-pill {
+    padding: 6px 8px;
+    min-width: 36px;
+    min-height: 36px;
     justify-content: center;
   }
-  .status-icon {
-    margin: 0;
+  .top-bar-left .theme-toggle {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    min-height: 36px;
   }
-  .user-pill,
-  .online-pill {
-    padding: 8px 10px;
-    min-height: 44px;
+  .top-bar-left .theme-toggle svg {
+    width: 18px;
+    height: 18px;
+  }
+  .top-bar-left .user-pill {
+    padding: 6px 8px;
+    font-size: 12px;
+    max-width: 100px;
+  }
+  .top-bar-left .user-pill-name {
+    max-width: 56px;
+  }
+  /* Row 2: room + copy + leave (full width, below row 1) */
+  .top-bar-mobile-row2 {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    gap: 6px;
+    padding: 4px 0 0;
+    border-top: 1px solid var(--bar-border);
+    margin-top: 4px;
+    padding-top: 6px;
+    order: 3;
+    flex-basis: 100%;
+  }
+  .top-bar-left .room-pill {
+    padding: 4px 8px;
+    font-size: 11px;
+    max-width: 72px;
+  }
+  .top-bar-left .room-pill-label {
+    display: none;
+  }
+  .top-bar-btn {
+    width: 32px;
+    height: 32px;
+  }
+  .top-bar-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+  .top-bar-right .stats-pill {
+    padding: 3px 6px;
+    font-size: 10px;
+    gap: 4px;
+  }
+  .top-bar-right .online-pill .online-pill-label {
+    display: none;
+  }
+  .top-bar-right .online-pill {
+    padding: 6px 8px;
+    min-height: 36px;
     font-size: 12px;
   }
-  .user-pill-name {
-    max-width: 80px;
+  .top-bar-right .user-pill.you {
+    display: none;
   }
   .online-panel {
     min-width: min(200px, 100vw - 24px);
     max-width: min(280px, calc(100vw - 24px));
+  }
+}
+
+@media (max-width: 380px) {
+  .top-bar-left .user-pill-name {
+    max-width: 40px;
+  }
+  .top-bar-left .room-pill {
+    max-width: 56px;
   }
 }
 

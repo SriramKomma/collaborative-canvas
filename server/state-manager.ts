@@ -12,12 +12,11 @@ export interface Point {
 export interface Stroke {
   id: string;
   userId: string;
-  tool: "brush" | "eraser" | "line" | "rect" | "circle" | "fill" | "arrow" | "star" | "triangle" | "text" | "image";
+  tool: "brush" | "eraser" | "line" | "rect" | "circle" | "fill" | "arrow" | "star" | "triangle" | "text";
   color: string;
   width: number;
   points: Point[];
   text?: string;
-  imageData?: string;
 }
 
 export class StateManager {

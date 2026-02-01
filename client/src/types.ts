@@ -8,8 +8,7 @@ export type Tool =
   | "arrow"
   | "star"
   | "triangle"
-  | "text"
-  | "image";
+  | "text";
 
 export interface Point {
   x: number;
@@ -25,8 +24,6 @@ export interface DrawAction {
   points: Point[];
   /** For text tool: the string to draw. */
   text?: string;
-  /** For image tool: data URL (e.g. image/png base64). */
-  imageData?: string;
 }
 
 export interface User {

@@ -251,9 +251,6 @@ export default function App() {
     const w = surface.clientWidth;
     const h = surface.clientHeight;
     manager.current = new CanvasManager(mainRef.current, tempRef.current, w, h, theme);
-    manager.current.onImageLoaded = () => {
-      manager.current?.drawHistory(history.current);
-    };
     manager.current.drawHistory(history.current);
 
     const ro = new ResizeObserver((entries) => {
@@ -302,9 +299,6 @@ export default function App() {
     };
   };
 
-  const imageInputRef = useRef<HTMLInputElement>(null);
-  const pendingImagePoint = useRef<{ x: number; y: number } | null>(null);
-
   const down = (e: React.PointerEvent) => {
     const p = getPos(e);
 
@@ -332,13 +326,6 @@ export default function App() {
         socket.current?.emit("draw-start", { userId: myId.current, point: p, tool: "text", color, width });
         socket.current?.emit("draw-end", action);
       }
-      return;
-    }
-
-    // Image tool: open file picker (position stored for when file loads)
-    if (tool === "image") {
-      pendingImagePoint.current = { x: Math.floor(p.x), y: Math.floor(p.y) };
-      imageInputRef.current?.click();
       return;
     }
 
@@ -518,67 +505,6 @@ export default function App() {
     e.target.value = "";
   };
 
-  const onImageFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    const pt = pendingImagePoint.current;
-    if (!file || !pt) return;
-    pendingImagePoint.current = null;
-    const reader = new FileReader();
-    reader.onload = () => {
-      const imageData = reader.result as string;
-      const action: DrawAction = {
-        id: uuid(),
-        userId: myId.current,
-        tool: "image",
-        color,
-        width,
-        points: [{ x: pt.x, y: pt.y }],
-        imageData,
-      };
-      history.current.push(action);
-      committedIds.current.add(action.id);
-      manager.current?.drawHistory(history.current);
-      socket.current?.emit("draw-start", { userId: myId.current, point: pt, tool: "image", color, width });
-      socket.current?.emit("draw-end", action);
-    };
-    reader.readAsDataURL(file);
-    e.target.value = "";
-  };
-
-  useEffect(() => {
-    const onPaste = (e: ClipboardEvent) => {
-      const item = e.clipboardData?.items?.[0];
-      if (!item || item.kind !== "file" || !item.type.startsWith("image/")) return;
-      e.preventDefault();
-      const file = item.getAsFile();
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = () => {
-        const imageData = reader.result as string;
-        const canvas = mainRef.current;
-        if (!canvas) return;
-        const cx = canvas.width / 2 - 50;
-        const cy = canvas.height / 2 - 50;
-        const action: DrawAction = {
-          id: uuid(),
-          userId: myId.current,
-          tool: "image",
-          color,
-          width: 5,
-          points: [{ x: cx, y: cy }],
-          imageData,
-        };
-        history.current.push(action);
-        committedIds.current.add(action.id);
-        manager.current?.drawHistory(history.current);
-        socket.current?.emit("draw-end", action);
-      };
-      reader.readAsDataURL(file);
-    };
-    window.addEventListener("paste", onPaste);
-    return () => window.removeEventListener("paste", onPaste);
-  }, [color]);
-
   const me = users.find((u) => u.id === myId.current);
   const displayName = me?.username ?? (currentUsername || "You");
 
@@ -617,16 +543,18 @@ export default function App() {
             <span className="user-pill-dot" />
             <span className="user-pill-name">{displayName}</span>
           </span>
-          <span className="room-pill" title={`Room: ${room}`}>
-            <span className="room-pill-label">Room:</span>
-            <span className="room-pill-id">{room}</span>
-          </span>
-          <button type="button" className="top-bar-btn" onClick={copyRoomLink} title="Copy room link" aria-label="Copy room link">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" /><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" /></svg>
-          </button>
-          <button type="button" className="top-bar-btn leave" onClick={leaveRoom} title="Leave room" aria-label="Leave room">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" /></svg>
-          </button>
+          <div className="top-bar-mobile-row2">
+            <span className="room-pill" title={`Room: ${room}`}>
+              <span className="room-pill-label">Room:</span>
+              <span className="room-pill-id">{room}</span>
+            </span>
+            <button type="button" className="top-bar-btn" onClick={copyRoomLink} title="Copy room link" aria-label="Copy room link">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" /><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" /></svg>
+            </button>
+            <button type="button" className="top-bar-btn leave" onClick={leaveRoom} title="Leave room" aria-label="Leave room">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" /></svg>
+            </button>
+          </div>
         </div>
         <div className="top-bar-right">
           <span className="stats-pill" title="Performance">
@@ -647,7 +575,8 @@ export default function App() {
                 <circle cx="9" cy="7" r="4" />
                 <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
               </svg>
-              Online ({users.length})
+              <span className="online-pill-label">Online </span>
+              <span className="online-pill-count">({users.length})</span>
             </button>
             {onlinePanelOpen && (
               <div className="online-panel" role="listbox" aria-label="Online users">
@@ -672,14 +601,6 @@ export default function App() {
         </div>
       </header>
 
-      <input
-        type="file"
-        ref={imageInputRef}
-        accept="image/*"
-        className="hidden-input"
-        aria-hidden
-        onChange={onImageFileSelect}
-      />
       <input type="file" accept=".json,application/json" className="hidden-input" aria-hidden onChange={loadJson} id="load-json-input" />
 
       <div className="canvas-wrap">
@@ -701,7 +622,7 @@ export default function App() {
       {/* Bottom toolbar */}
       <div className="toolbar">
         <div className="toolbar-group tools">
-          {(["brush", "eraser", "rect", "circle", "arrow", "star", "triangle", "fill", "text", "image"] as Tool[]).map((t) => (
+          {(["brush", "eraser", "rect", "circle", "arrow", "star", "triangle", "fill", "text"] as Tool[]).map((t) => (
             <ToolIcon
               key={t}
               tool={t}
