@@ -6,8 +6,6 @@ export type Tool =
   | "circle"
   | "fill"
   | "arrow"
-  | "star"
-  | "triangle"
   | "text";
 
 export interface Point {

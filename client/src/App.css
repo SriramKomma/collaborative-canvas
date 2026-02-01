@@ -415,11 +415,6 @@ body {
     width: 16px;
     height: 16px;
   }
-  .top-bar-right .stats-pill {
-    padding: 3px 6px;
-    font-size: 10px;
-    gap: 4px;
-  }
   .top-bar-right .online-pill .online-pill-label {
     display: none;
   }
@@ -510,18 +505,6 @@ body {
 .top-bar-btn:hover { background: var(--tool-bg); color: var(--text-primary); }
 .top-bar-btn.leave:hover { color: #f87171; }
 
-.stats-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 4px 10px;
-  border-radius: 999px;
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--text-muted);
-  background: var(--pill-bg);
-}
-.stats-fps, .stats-latency { white-space: nowrap; }
 
 .hidden-input {
   position: absolute;
@@ -866,10 +849,51 @@ canvas.temp {
     min-width: 28px;
     min-height: 28px;
   }
+
+  /* Stroke size picker: keep a large touch target, but vary the visible dot size. */
   .stroke-dot {
-    min-width: 28px;
-    min-height: 28px;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    max-width: 44px;
+    max-height: 44px;
+    padding: 0;
+    background: transparent;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
   }
+
+  .stroke-dot::before {
+    content: "";
+    width: clamp(12px, calc(10px + var(--size, 4) * 1.2px), 28px);
+    height: clamp(12px, calc(10px + var(--size, 4) * 1.2px), 28px);
+    border-radius: 50%;
+    background: var(--stroke-dot-bg);
+    transition: background 0.15s, box-shadow 0.2s, transform 0.15s;
+  }
+
+  .stroke-dot:hover {
+    background: transparent;
+  }
+
+  .stroke-dot:hover::before {
+    background: var(--pill-bg);
+    transform: scale(1.05);
+  }
+
+  .stroke-dot.active {
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .stroke-dot.active::before {
+    background: rgba(45, 212, 191, 0.4);
+    box-shadow: 0 0 12px rgba(45, 212, 191, 0.5);
+  }
+
   :root {
     --toolbar-height: 88px;
   }

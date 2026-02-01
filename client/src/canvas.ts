@@ -91,7 +91,11 @@ export class CanvasManager {
     this.drawGrid(this.main, 24, this.grid);
   }
 
-  private drawGrid(ctx: CanvasRenderingContext2D, step: number, stroke: string) {
+  private drawGrid(
+    ctx: CanvasRenderingContext2D,
+    step: number,
+    stroke: string,
+  ) {
     ctx.strokeStyle = stroke;
     ctx.lineWidth = 1;
     for (let x = 0; x <= this.w; x += step) {
@@ -157,20 +161,17 @@ export class CanvasManager {
 
       case "fill":
         if (a.points.length > 0) {
-          this.doFloodFill(ctx, Math.floor(a.points[0].x), Math.floor(a.points[0].y), a.color);
+          this.doFloodFill(
+            ctx,
+            Math.floor(a.points[0].x),
+            Math.floor(a.points[0].y),
+            a.color,
+          );
         }
         break;
 
       case "arrow":
         this.drawArrow(ctx, a);
-        break;
-
-      case "star":
-        this.drawStar(ctx, a);
-        break;
-
-      case "triangle":
-        this.drawTriangle(ctx, a);
         break;
 
       case "text":
@@ -207,46 +208,11 @@ export class CanvasManager {
     ctx.stroke();
   }
 
-  private drawStar(ctx: CanvasRenderingContext2D, a: DrawAction) {
-    if (a.points.length < 2) return;
-    const [p1, p2] = a.points;
-    const cx = (p1.x + p2.x) / 2;
-    const cy = (p1.y + p2.y) / 2;
-    const outer = Math.hypot(p2.x - cx, p2.y - cy) || 1;
-    const inner = outer * 0.4;
-    const rays = 5;
-    ctx.beginPath();
-    for (let i = 0; i < rays * 2; i++) {
-      const r = i % 2 === 0 ? outer : inner;
-      const angle = (Math.PI * 2 * i) / (rays * 2) - Math.PI / 2;
-      const x = cx + r * Math.cos(angle);
-      const y = cy + r * Math.sin(angle);
-      if (i === 0) ctx.moveTo(x, y);
-      else ctx.lineTo(x, y);
-    }
-    ctx.closePath();
-    ctx.stroke();
-  }
-
-  private drawTriangle(ctx: CanvasRenderingContext2D, a: DrawAction) {
-    if (a.points.length < 2) return;
-    const [p1, p2] = a.points;
-    const cx = (p1.x + p2.x) / 2;
-    const cy = (p1.y + p2.y) / 2;
-    const w = Math.abs(p2.x - p1.x) || 20;
-    const h = Math.abs(p2.y - p1.y) || 20;
-    ctx.beginPath();
-    ctx.moveTo(cx, cy - h / 2);
-    ctx.lineTo(cx - w / 2, cy + h / 2);
-    ctx.lineTo(cx + w / 2, cy + h / 2);
-    ctx.closePath();
-    ctx.stroke();
-  }
-
   /** Parse hex color "#rrggbb" or "#rgb" to [r, g, b]. */
   private hexToRgb(hex: string): [number, number, number] {
-    const match = hex.match(/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i)
-      ?? hex.match(/^#?([a-f\d])([a-f\d])([a-f\d])$/i);
+    const match =
+      hex.match(/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i) ??
+      hex.match(/^#?([a-f\d])([a-f\d])([a-f\d])$/i);
     if (!match) return [0, 0, 0];
     const u = match[1].length === 1 ? 17 : 1; // #f00 -> 0xff, #ff0000 -> 0xff
     return [
@@ -257,7 +223,12 @@ export class CanvasManager {
   }
 
   /** Flood fill from (x, y) replacing same-color pixels with fillColor (hex). */
-  private doFloodFill(ctx: CanvasRenderingContext2D, x: number, y: number, fillColorHex: string) {
+  private doFloodFill(
+    ctx: CanvasRenderingContext2D,
+    x: number,
+    y: number,
+    fillColorHex: string,
+  ) {
     const w = this.w;
     const h = this.h;
     if (x < 0 || x >= w || y < 0 || y >= h) return;
@@ -270,7 +241,13 @@ export class CanvasManager {
     const targetA = data[idx + 3];
     const [fillR, fillG, fillB] = this.hexToRgb(fillColorHex);
     const fillA = 255;
-    if (targetR === fillR && targetG === fillG && targetB === fillB && targetA === fillA) return;
+    if (
+      targetR === fillR &&
+      targetG === fillG &&
+      targetB === fillB &&
+      targetA === fillA
+    )
+      return;
     const stack: [number, number][] = [[x, y]];
     const visited = new Uint8Array(w * h);
     const tolerance = 32;

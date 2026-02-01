@@ -30,29 +30,24 @@ const CircleIcon = () => (
 );
 
 const FillIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M7 4v12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4" />
-    <path d="M7 4l5-2 5 2" />
-    <path d="M12 6v2" />
-    <path d="M10 20l2-4" />
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round">
+    {/* paint bucket */}
+    <path d="M7 11l6-6 4 4-6 6H7v-4z" />
+    <path d="M13 5l3-3 3 3-3 3-3-3z" />
+    <path d="M6 20h12" />
+    <path d="M9 20c0-2 1.5-3.5 3-3.5s3 1.5 3 3.5" />
   </svg>
 );
 
 const ArrowIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M5 12h14M12 5l7 7-7 7" />
-  </svg>
-);
-
-const StarIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <polygon points="12 2 15 9 22 9 17 14 18 22 12 18 6 22 7 14 2 9 9 9" />
-  </svg>
-);
-
-const TriangleIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M12 4L4 20h16L12 4z" />
   </svg>
 );
 
@@ -70,8 +65,6 @@ const icons: Record<Tool, ReactNode> = {
   line: <PenIcon />,
   fill: <FillIcon />,
   arrow: <ArrowIcon />,
-  star: <StarIcon />,
-  triangle: <TriangleIcon />,
   text: <TextIcon />,
 };
 
@@ -83,8 +76,6 @@ const labels: Record<Tool, string> = {
   line: "Line",
   fill: "Fill",
   arrow: "Arrow",
-  star: "Star",
-  triangle: "Triangle",
   text: "Text",
 };
 
